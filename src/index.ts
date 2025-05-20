@@ -12,6 +12,11 @@ async function main() {
     
     // Now use the updated config
     console.log("Initializing wallet and connection...");
+    
+    if (!config.privateKeyJSON) {
+      throw new Error("Missing privateKeyJSON – set it in the UI or .env");
+    }
+    
     const secret = Uint8Array.from(JSON.parse(config.privateKeyJSON));
     const wallet = Keypair.fromSecretKey(secret);
     const connection = new Connection(config.rpcUrl, "confirmed");

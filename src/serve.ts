@@ -1,13 +1,14 @@
-import http from "node:http";
-import { readFile, stat } from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { loadSettings, saveSettings } from "./build/settings.js";
+import * as http from "http";
+import { readFile, stat } from "fs/promises";
+import * as path from "path";
+import { fileURLToPath } from "url";
+import { loadSettings, saveSettings } from "./settings.js";
+import { loadUserSettings } from "./config.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(__dirname, "src", "web-ui");
+const root = path.resolve(__dirname, "web-ui");
 
-const MIME = {
+const MIME: Record<string, string> = {
   ".html": "text/html",
   ".js": "text/javascript",
   ".css": "text/css",
@@ -32,15 +33,19 @@ try {
   const files = await fs.readdir(root);
   console.log(`Files in directory: ${files.join(", ")}`);
 } catch (err) {
-  console.error(`Error checking directory: ${err.message}`);
+  if (err instanceof Error) {
+    console.error(`Error checking directory: ${err.message}`);
+  } else {
+    console.error(`Unknown error checking directory`);
+  }
 }
 
 // Helper to parse JSON body from requests
-async function parseJsonBody(req) {
+async function parseJsonBody(req: http.IncomingMessage): Promise<any> {
   return new Promise((resolve, reject) => {
     let body = '';
     
-    req.on('data', chunk => {
+    req.on('data', (chunk: Buffer) => {
       body += chunk.toString();
     });
     
@@ -53,14 +58,18 @@ async function parseJsonBody(req) {
       }
     });
     
-    req.on('error', (error) => {
+    req.on('error', (error: Error) => {
       reject(error);
     });
   });
 }
 
-const server = http.createServer(async (req, res) => {
+const server = http.createServer(async (req: http.IncomingMessage, res: http.ServerResponse) => {
   try {
+    if (!req.url) {
+      throw new Error("No URL in request");
+    }
+
     console.log(`Received request for: ${req.url}`);
     
     // Handle API requests
@@ -94,8 +103,6 @@ const server = http.createServer(async (req, res) => {
           
           // Reload user settings after changes
           try {
-            // Dynamic import to avoid circular dependency
-            const { loadUserSettings } = await import("./build/config.js");
             await loadUserSettings();
             console.log("Config reloaded after settings update");
           } catch (configError) {
@@ -106,9 +113,10 @@ const server = http.createServer(async (req, res) => {
           res.end(JSON.stringify({ success: true }));
           console.log("Settings saved successfully");
         } catch (error) {
-          console.error("Error saving settings:", error);
+          const errorMessage = error instanceof Error ? error.message : "Unknown error";
+          console.error("Error saving settings:", errorMessage);
           res.writeHead(400, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ success: false, error: error.message }));
+          res.end(JSON.stringify({ success: false, error: errorMessage }));
         }
         return;
       }
@@ -127,15 +135,16 @@ const server = http.createServer(async (req, res) => {
     res.end(data);
     console.log(`Served: ${filePath} (${MIME[ext] ?? "text/plain"})`);
   } catch (err) {
-    console.error(`Error serving ${req?.url}: ${err.message}`);
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    console.error(`Error serving ${req?.url}: ${errorMessage}`);
     res.writeHead(404).end("404 Not Found");
   }
 });
 
-server.on('error', (e) => {
+server.on('error', (e: Error) => {
   console.error(`Server error: ${e.message}`);
 });
 
-server.listen(PORT, "0.0.0.0", () =>
+server.listen(Number(PORT), "0.0.0.0", () =>
   console.log(`▶ Static UI available on http://localhost:${PORT}`)
 );

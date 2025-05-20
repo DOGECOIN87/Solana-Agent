@@ -4,6 +4,9 @@
   "description": "A Model Context Protocol server",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "bin": {
     "solscan-agent": "./build/index.js"
   },

@@ -32,7 +32,7 @@ The agent is built as an MCP (Model Context Protocol) server with multiple speci
 ## Getting Started
 
 ### Prerequisites
-- Node.js v18+ 
+- Node.js v18+ (required - older versions are not supported)
 - Solscan Pro API key
 - (Optional) Jupiter API key for enhanced swap capabilities
 
@@ -44,9 +44,9 @@ git clone https://github.com/yourusername/solscan-agent.git
 cd solscan-agent
 ```
 
-2. Install dependencies
+2. Install dependencies and build the project (required before doing anything else)
 ```bash
-npm install
+npm ci && npm run build
 ```
 
 3. Set up environment variables
@@ -56,12 +56,25 @@ echo "SOLSCAN_API_KEY=your_solscan_api_key" > .env
 echo "JUPITER_API_KEY=your_jupiter_api_key" >> .env
 ```
 
-4. Build the project
+4. Start the static UI and API server
 ```bash
-npm run build
+# If port 8080 is busy or not forwarded in your environment:
+export PORT=3000
+# Start the server
+node serve.js
 ```
 
-5. Start the MCP server
+   **Important for GitHub Codespaces / VS Code Remote users:**
+   - The server runs on port 8080 by default (or your specified PORT)
+   - You must manually forward this port to access the UI:
+     - In VS Code: Look for the "Ports" tab in the terminal area
+     - Click "Forward a Port" and enter the port number (8080 or your custom port)
+     - Or use the command palette: "Forward a Port" and enter the port number
+   - Once forwarded, click the globe icon next to the port to open in browser
+
+5. Open the UI in your browser, enter your API keys and privateKeyJSON
+
+6. Run the CLI example in another terminal
 ```bash
 node build/index.js
 ```
