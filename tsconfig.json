@@ -5,11 +5,12 @@
                     "moduleResolution": "Node16",
                         "moduleSuffixes": [".js"],
                             "esModuleInterop": true,
-                                "outDir": "dist",
-                                    "rootDir": "src",
-                                        "strict": true,
-                                            "resolveJsonModule": true,
-                                                "skipLibCheck": true
+                                "verbatimModuleSyntax": true,
+                                    "strict": true,
+                                        "rootDir": "src",
+                                            "outDir": "build",
+                                                "resolveJsonModule": true,
+                                                    "skipLibCheck": true
       },
         "include": ["src/**/*"]
 }

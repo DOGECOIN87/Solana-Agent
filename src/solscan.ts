@@ -1,11 +1,10 @@
 import fetch from "node-fetch";
-const { SOLSCAN_API_KEY } = process.env;
+import { config } from "./config.js";
 
 export async function fetchFromSolscan(address: string) {
-      const r = await fetch(`https://pro-api.solscan.io/v2/account/${address}`, {
-            headers: { Authorization: `Bearer ${SOLSCAN_API_KEY}` }
-      });
-        if (!r.ok) throw new Error(`Solscan HTTP ${r.status}`);
-          const data = await r.json();
-            return data;
+    const r = await fetch(`https://pro-api.solscan.io/v2/account/${address}`, {
+          headers: { Authorization: `Bearer ${config.solscanKey}` }
+    });
+      if (!r.ok) throw new Error(`Solscan HTTP ${r.status}`);
+        return r.json();
 }
