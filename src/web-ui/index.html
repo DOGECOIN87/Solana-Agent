@@ -14,7 +14,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="logo">
-        <img src="solana-logo.svg" alt="Solana Logo">
+        <img src="default-token-icon.svg" alt="Solana Logo">
         <h1>Solana AI Agent</h1>
       </div>
       <nav>
@@ -43,6 +43,15 @@
         </div>
         <div class="wallet-connect">
           <button id="connect-wallet">Connect Wallet</button>
+          <div class="wallet-display hidden">
+            <span class="wallet-icon"></span>
+            <span class="wallet-address"></span>
+            <div class="wallet-menu">
+              <ul>
+                <li><a href="#" id="disconnect-wallet">Disconnect Wallet</a></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -109,74 +118,82 @@
 
         <!-- Wallet Panel -->
         <div class="panel" id="wallet-panel">
-          <div class="wallet-header">
-            <h2>Wallet Overview</h2>
-            <div class="wallet-address-container">
-              <span class="wallet-address" id="displayed-wallet-address">Connect wallet to view</span>
-              <button class="copy-button" id="copy-address" disabled>Copy</button>
-            </div>
-          </div>
-          
-          <div class="wallet-summary">
-            <div class="balance-card">
-              <h3>Total Value</h3>
-              <p class="balance-value" id="total-value">$--</p>
-            </div>
-            <div class="balance-card">
-              <h3>SOL Balance</h3>
-              <p class="balance-value" id="sol-balance">-- SOL</p>
-              <p class="balance-value-usd" id="sol-balance-usd">$--</p>
-            </div>
-            <div class="balance-card">
-              <h3>Tokens</h3>
-              <p class="balance-value" id="token-count">--</p>
-            </div>
-            <div class="balance-card">
-              <h3>NFTs</h3>
-              <p class="balance-value" id="nft-count">--</p>
-            </div>
+          <div class="wallet-connection-card">
+            <h2>Connect Your Wallet</h2>
+            <p>Connect your Solana wallet to view your balances, tokens, and transaction history.</p>
+            <button id="connect-wallet-panel">Connect Wallet</button>
           </div>
 
-          <h3>Token Holdings</h3>
-          <div class="table-container">
-            <table id="token-holdings">
-              <thead>
-                <tr>
-                  <th>Token</th>
-                  <th>Balance</th>
-                  <th>Value (USD)</th>
-                  <th>Price</th>
-                  <th>Change (24h)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Token holdings will be dynamically inserted here -->
-                <tr class="loading-row">
-                  <td colspan="5">Connect wallet to view token holdings</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3>Recent Transactions</h3>
-          <div class="table-container">
-            <table id="recent-transactions">
-              <thead>
-                <tr>
-                  <th>Signature</th>
-                  <th>Type</th>
-                  <th>Status</th>
-                  <th>Age</th>
-                  <th>Fee</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Recent transactions will be dynamically inserted here -->
-                <tr class="loading-row">
-                  <td colspan="5">Connect wallet to view transactions</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="wallet-info-card hidden">
+            <div class="wallet-header">
+              <h2>Wallet Overview</h2>
+              <div class="wallet-address-container">
+                <span class="wallet-address" id="displayed-wallet-address"></span>
+                <button class="copy-button" id="copy-address-btn">Copy</button>
+              </div>
+            </div>
+            
+            <div class="wallet-summary">
+              <div class="balance-card">
+                <h3>Total Value</h3>
+                <p class="balance-value" id="total-value">$--</p>
+              </div>
+              <div class="balance-card">
+                <h3>SOL Balance</h3>
+                <p class="balance-value" id="sol-balance">-- SOL</p>
+                <p class="balance-value-usd" id="sol-balance-usd">$--</p>
+              </div>
+              <div class="balance-card">
+                <h3>Tokens</h3>
+                <p class="balance-value" id="token-count">--</p>
+              </div>
+              <div class="balance-card">
+                <h3>NFTs</h3>
+                <p class="balance-value" id="nft-count">--</p>
+              </div>
+            </div>
+            
+            <h3>Token Holdings</h3>
+            <div class="table-container">
+              <table id="token-holdings">
+                <thead>
+                  <tr>
+                    <th>Token</th>
+                    <th>Balance</th>
+                    <th>Value (USD)</th>
+                    <th>Price</th>
+                    <th>Change (24h)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Token holdings will be dynamically inserted here -->
+                  <tr class="loading-row">
+                    <td colspan="5">Loading token holdings...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <h3>Recent Transactions</h3>
+            <div class="table-container">
+              <table id="recent-transactions">
+                <thead>
+                  <tr>
+                    <th>Signature</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Age</th>
+                    <th>Fee</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Recent transactions will be dynamically inserted here -->
+                  <tr class="loading-row">
+                    <td colspan="5">Loading transactions...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -203,7 +220,7 @@
                 </div>
               </div>
 
-              <button class="swap-direction-button">
+              <button class="swap-direction-button" id="swap-direction-btn">
                 <span class="swap-icon">↓↑</span>
               </button>
 
@@ -243,7 +260,7 @@
                 </div>
               </div>
 
-              <button class="swap-button" id="execute-swap" disabled>Connect Wallet to Swap</button>
+              <button class="swap-button" id="execute-swap-btn" disabled>Connect Wallet to Swap</button>
             </div>
 
             <div class="routes-card">
@@ -256,7 +273,7 @@
         </div>
 
         <!-- Tokens Panel -->
-        <div class="panel" id="tokens-panel">
+        <div class="panel tokens-panel" id="tokens-panel">
           <h2>Token Explorer</h2>
           
           <div class="token-categories">
@@ -401,7 +418,7 @@
         </div>
 
         <!-- Analytics Panel -->
-        <div class="panel" id="analytics-panel">
+        <div class="panel analytics-panel" id="analytics-panel">
           <h2>Analytics Dashboard</h2>
           
           <div class="chart-grid">
@@ -481,7 +498,7 @@
         </div>
 
         <!-- AI Assistant Panel -->
-        <div class="panel" id="assistant-panel">
+        <div class="panel assistant-panel" id="assistant-panel">
           <h2>AI Assistant</h2>
           
           <div class="assistant-container">
@@ -543,6 +560,6 @@
     <p id="loading-message">Loading Solana AI Agent...</p>
   </div>
 
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

@@ -21,10 +21,19 @@ export function initWallet() {
  */
 function setupWalletListeners() {
   // Connect wallet button
-  document.getElementById('connect-wallet-btn').addEventListener('click', connectWallet);
+  document.getElementById('connect-wallet').addEventListener('click', connectWallet);
   
   // Disconnect wallet button (in user menu)
-  document.getElementById('disconnect-wallet').addEventListener('click', disconnectWallet);
+  const disconnectButton = document.getElementById('disconnect-wallet');
+  if (disconnectButton) {
+    disconnectButton.addEventListener('click', disconnectWallet);
+  }
+  
+    // Copy address button
+  const copyButton = document.querySelector('.wallet-info-card #copy-address');
+  if (copyButton) {
+    copyButton.addEventListener('click', copyWalletAddress);
+  }
   
   // Wallet dropdown in header
   const walletDisplay = document.querySelector('.wallet-display');
@@ -142,7 +151,7 @@ function disconnectWallet() {
  * Update wallet UI elements based on connection state
  */
 function updateWalletUI(wallet) {
-  const connectButton = document.getElementById('connect-wallet-btn');
+  const connectButton = document.getElementById('connect-wallet');
   const walletDisplay = document.querySelector('.wallet-display');
   const walletAddress = document.querySelector('.wallet-address');
   const walletIcon = document.querySelector('.wallet-icon');

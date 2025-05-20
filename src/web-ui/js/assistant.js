@@ -105,7 +105,7 @@ async function handleChatSubmit(event) {
  * Add a user message to the chat
  */
 function addUserMessage(message) {
-  const chatMessages = document.getElementById('chat-messages');
+  const chatMessages = document.getElementById('conversation');
   
   const messageDiv = document.createElement('div');
   messageDiv.classList.add('chat-message', 'user-message');
@@ -141,7 +141,7 @@ function addUserMessage(message) {
  * Add a bot message to the chat
  */
 function addBotMessage(message) {
-  const chatMessages = document.getElementById('chat-messages');
+  const chatMessages = document.getElementById('conversation');
   
   const messageDiv = document.createElement('div');
   messageDiv.classList.add('chat-message', 'bot-message');
@@ -178,7 +178,7 @@ function addBotMessage(message) {
  * Show typing indicator
  */
 function showTypingIndicator() {
-  const chatMessages = document.getElementById('chat-messages');
+  const chatMessages = document.getElementById('conversation');
   
   const indicatorDiv = document.createElement('div');
   indicatorDiv.id = 'typing-indicator';
@@ -255,7 +255,7 @@ function getCurrentTime() {
  * Scroll chat to bottom
  */
 function scrollToBottom() {
-  const chatMessages = document.getElementById('chat-messages');
+  const chatMessages = document.getElementById('conversation');
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
@@ -263,7 +263,7 @@ function scrollToBottom() {
  * Clear chat history
  */
 function clearChat() {
-  const chatMessages = document.getElementById('chat-messages');
+  const chatMessages = document.getElementById('conversation');
   
   // Clear UI
   chatMessages.innerHTML = '';

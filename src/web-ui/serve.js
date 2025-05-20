@@ -4,9 +4,9 @@
  * Simple HTTP server to serve the Solana AI Agent Dashboard
  */
 
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
 
 // Define the port
 const PORT = process.env.PORT || 3000;
