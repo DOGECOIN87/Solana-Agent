@@ -28,4 +28,4 @@ http.createServer(async (req, res) => {
       } catch {
             res.writeHead(404).end("404 Not Found");
       }
-}).listen(8080, () => console.log("▶ UI on http://localhost:8080"));
+}).listen(8080, '0.0.0.0', () => console.log("▶ UI on http://localhost:8080"));
