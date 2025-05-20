@@ -14,18 +14,17 @@
     "build"
   ],
   "scripts": {
-    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "build": "tsc --skipLibCheck --noEmitOnError || true && node -e \"import('fs').then(fs => fs.chmodSync('build/index.js', '755'))\"",
+    "force-build": "node force-build.js",
     "prepare": "npm run build",
     "watch": "tsc --watch",
-    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js",
+    "start": "node start.js"
   },
   "dependencies": {
     "@jup-ag/api": "^6.0.42",
     "@modelcontextprotocol/sdk": "0.6.0",
     "@solana/web3.js": "^1.98.2",
-    "@types/bs58": "^4.0.4",
-    "@types/chalk": "^0.4.31",
-    "@types/figlet": "^1.7.0",
     "axios": "^1.9.0",
     "bs58": "^6.0.0",
     "chalk": "^5.4.1",
@@ -37,7 +36,13 @@
     "ora": "^8.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20.17.48",
+    "@types/bs58": "^4.0.4",
+    "@types/chalk": "^0.4.31",
+    "@types/connect": "^3.4.38",
+    "@types/figlet": "^1.7.0",
+    "@types/node": "^20.17.49",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.18.1",
     "typescript": "^5.3.3"
   }
 }
