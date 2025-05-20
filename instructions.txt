@@ -1,0 +1,215 @@
+```prompt
+# Solana-Agent â€” One-Shot Fix & Hardening Task
+# Paste this entire prompt into your AI code editor (Cline in VS Code).  
+# It must **run each TERMINAL block in order** and replace every file exactly as shown.
+
+########################################
+# TERMINAL 1 â€” project bootstrap
+########################################
+cd ~/Projects/Solana-Agent-main
+npm install chalk@^5 @types/chalk --save
+
+########################################
+# TERMINAL 2 â€” add env template (skip if exists)
+########################################
+cat <<'EOF' > .env.example
+# === REQUIRED KEYS ===
+SOLSCAN_API_KEY=
+JUPITER_API_KEY=
+SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+SOLANA_PRIVATE_KEY= # base58 or base64 secret-key string
+EOF
+
+########################################
+# FILE: tsconfig.json  (overwrite whole file)
+########################################
+{
+      "compilerOptions": {
+            "target": "ES2022",
+                "module": "Node16",
+                    "moduleResolution": "Node16",
+                        "moduleSuffixes": [".js"],
+                            "esModuleInterop": true,
+                                "outDir": "dist",
+                                    "rootDir": "src",
+                                        "strict": true,
+                                            "resolveJsonModule": true,
+                                                "skipLibCheck": true
+      },
+        "include": ["src/**/*"]
+}
+
+########################################
+# FILE: serve.js  (overwrite whole file)
+########################################
+import http from "node:http";
+import { readFile, stat } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(__dirname, "src", "web-ui");
+
+const mime = {
+      ".html": "text/html",
+        ".js":   "text/javascript",
+          ".css":  "text/css",
+            ".map":  "application/json",
+              ".png":  "image/png",
+                ".svg":  "image/svg+xml"
+};
+
+http.createServer(async (req, res) => {
+      try {
+            let filePath = req.url === "/" ? "/index.html" : req.url;
+                filePath = path.join(root, filePath);
+                    await stat(filePath);                                  // throws if 404
+
+                        const data = await readFile(filePath);
+                            const ext  = path.extname(filePath);
+                                res.writeHead(200, { "Content-Type": mime[ext] ?? "text/plain" });
+                                    res.end(data);
+      } catch {
+            res.writeHead(404).end("404 Not Found");
+      }
+}).listen(8080, () => console.log("â–¶ UI on http://localhost:8080"));
+```
+
+########################################
+# FILE: src/jupiter.ts  (overwrite whole file)
+########################################
+```ts
+import fetch from "node-fetch";
+
+export interface QuoteOptions {
+      inputMint:  string;
+        outputMint: string;
+          amount:     string;
+            slippageBps?: number;
+              restrictIntermediateTokens?: string[];   // âœ… typo fixed
+}
+
+export async function getQuote(opts: QuoteOptions) {
+      const url = "https://quote-api.jup.ag/v6/quote";
+        const params = new URLSearchParams({
+                ...opts,
+                    slippageBps: String(opts.slippageBps ?? 50)
+        });
+          if (opts.restrictIntermediateTokens)
+              params.append("restrictIntermediateTokens", opts.restrictIntermediateTokens.join(","));
+
+                const r = await fetch(`${url}?${params.toString()}`);
+                  if (!r.ok) throw new Error(`Jupiter error ${r.status}`);
+                    return r.json();
+}
+```
+
+########################################
+# FILE: src/index.ts  (overwrite whole file)
+########################################
+```ts
+import "dotenv/config";
+import { Connection, Keypair } from "@solana/web3.js";
+import { getQuote } from "./jupiter.js";
+import { fetchFromSolscan } from "./solscan.js";
+
+const {
+      SOLANA_RPC_URL,
+        SOLANA_PRIVATE_KEY
+} = process.env;
+
+if (!SOLANA_PRIVATE_KEY) throw new Error("Missing SOLANA_PRIVATE_KEY");
+
+const secret = Uint8Array.from(JSON.parse(SOLANA_PRIVATE_KEY));
+const wallet = Keypair.fromSecretKey(secret);
+const connection = new Connection(SOLANA_RPC_URL!, "confirmed");
+
+(async () => {
+      const quote = await getQuote({
+            inputMint:  "So11111111111111111111111111111111111111112", // SOL
+                outputMint: "USDCE1zkH1C2oyJBKiyFJbtEyyiRKyy56pDXGfYC9t1", // USDC
+                    amount:     "1000000"
+      });
+        console.log("Best Quote", quote);
+
+          const acct = await fetchFromSolscan(wallet.publicKey.toBase58());
+            console.log("Account info", acct);
+})();
+```
+
+########################################
+# FILE: src/solscan.ts  (new file)
+########################################
+```ts
+import fetch from "node-fetch";
+const { SOLSCAN_API_KEY } = process.env;
+
+export async function fetchFromSolscan(address: string) {
+      const r = await fetch(`https://pro-api.solscan.io/v2/account/${address}`, {
+            headers: { Authorization: `Bearer ${SOLSCAN_API_KEY}` }
+      });
+        if (!r.ok) throw new Error(`Solscan HTTP ${r.status}`);
+          const data = await r.json();
+            return data;
+}
+```
+
+########################################
+# FILE: src/web-ui/js/wallet.js  (overwrite whole file)
+########################################
+```js
+document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.querySelector("#connect-wallet");
+        if (!btn) return console.error("#connect-wallet button missing");
+          btn.addEventListener("click", async () => {
+                // stubbed wallet connect logic
+                    alert("Wallet connect coming soonâ€¦");
+          });
+});
+```
+
+########################################
+# FILE: src/web-ui/index.html  (overwrite whole file)
+########################################
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+    <title>Solana Agent Dashboard</title>
+      <link rel="stylesheet" href="styles.css" />
+      </head>
+      <body>
+        <header>
+            <button id="connect-wallet">Connect Wallet</button>
+              </header>
+                <script type="module" src="js/wallet.js"></script>
+                </body>
+                </html>
+                ```
+
+                ########################################
+                # TERMINAL 3 â€” type-check & run
+                ########################################
+                npm run build            # or: npx tsc
+                node serve.js            # static UI on :8080
+                node dist/index.js       # backend demo
+
+                # End of prompt
+                ```
+          })
+})
+      })
+}
+      })
+})
+}
+        })
+}
+}
+      }
+      }
+})
+}
+      }
+}
